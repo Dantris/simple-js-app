@@ -1,5 +1,20 @@
-alert('Hello world');
+let pokemonList = [];
 
-let favoriteFood = 'Beef Tatar';
+// Each object represents a pokemon
+pokemonList.push({
+  name: 'Bulbasaur',
+  height: 7,
+  types: ['grass', 'poison'],
+});
 
-document.write(favoriteFood);
+pokemonList.push({
+  name: 'Charmander',
+  height: 6,
+  types: ['fire'],
+});
+
+pokemonList.push({
+  name: 'Squirtle',
+  height: 5,
+  types: ['water'],
+});
