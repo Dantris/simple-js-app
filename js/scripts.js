@@ -1,26 +1,6 @@
 const pokemonRepository = (function () {
-  const pokemonList = [
-    {
-      name: 'Bulbasaur',
-      height: 0.7,
-      types: ['grass', 'poison'],
-    },
-    {
-      name: 'Charizard',
-      height: 1.7,
-      types: ['fire', 'flying'],
-    },
-    {
-      name: 'Squirtle',
-      height: 1,
-      types: ['water'],
-    },
-    {
-      name: 'Cubone',
-      height: 0.4,
-      types: ['Ground'],
-    },
-  ];
+  const pokemonList = [];
+  const apiUrl = 'https://pokeapi.co/api/v2/pokemon/';
 
   function getAll() {
     return pokemonList;
@@ -51,14 +31,50 @@ const pokemonRepository = (function () {
     pokemonListElement.appendChild(listItem);
 
     button.addEventListener('click', function () {
-      showDetails(pokemon);
+      showDetails(pokemon); // Call showDetails here
     });
   }
 
+  function loadList() {
+    return fetch(apiUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        data.results.forEach((item) => {
+          const pokemon = {
+            name: item.name,
+            detailsUrl: item.url,
+          };
+          add(pokemon);
+        });
+      })
+      .catch((error) => {
+        console.error('Error loading Pokémon list', error);
+      });
+  }
+
+  function loadDetails(pokemon) {
+    const url = pokemon.detailsUrl;
+    return fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        pokemon.imgUrl = data.sprites.front_default;
+        pokemon.height = data.height / 10; // Convert height to meters
+      })
+      .catch((error) => {
+        console.error(`Error loading details for ${pokemon.name}`, error);
+      });
+  }
+
   function showDetails(pokemon) {
-    console.log(`Name: ${pokemon.name}`);
-    console.log(`Height: ${pokemon.height}`);
-    console.log(`Types: ${pokemon.types.join(', ')}`);
+    loadDetails(pokemon)
+      .then(() => {
+        console.log(`Name: ${pokemon.name}`);
+        console.log(`Height: ${pokemon.height}`);
+        console.log(`Image URL: ${pokemon.imgUrl}`);
+      })
+      .catch((error) => {
+        console.error('Error loading Pokémon details', error);
+      });
   }
 
   return {
@@ -66,22 +82,19 @@ const pokemonRepository = (function () {
     add: add,
     findByName: findByName,
     addListItem: addListItem,
+    loadList: loadList,
+    loadDetails: loadDetails,
   };
 })();
 
 const specialHeightThreshold = 1;
 
-// Adding a new Pokémon
-pokemonRepository.add({
-  name: 'Pikachu',
-  height: 0.4,
-  types: ['electric'],
-});
-
-const pokemonList = pokemonRepository.getAll();
 const pokemonListElement = document.querySelector('.pokemon-list');
 
-// Loop through the Pokémon list and create buttons
-pokemonList.forEach(function (pokemon) {
-  pokemonRepository.addListItem(pokemon);
+// Load the Pokémon list from the external source and then populate the list
+pokemonRepository.loadList().then(function () {
+  const pokemonList = pokemonRepository.getAll();
+  pokemonList.forEach(function (pokemon) {
+    pokemonRepository.addListItem(pokemon);
+  });
 });
