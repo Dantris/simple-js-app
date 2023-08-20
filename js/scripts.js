@@ -1,100 +1,132 @@
-const pokemonRepository = (function () {
-  const pokemonList = [];
-  const apiUrl = 'https://pokeapi.co/api/v2/pokemon/';
+document.addEventListener('DOMContentLoaded', function () {
+  const pokemonRepository = (function () {
+    const pokemonList = [];
+    const apiUrl = 'https://pokeapi.co/api/v2/pokemon/';
 
-  function getAll() {
-    return pokemonList;
-  }
-
-  function add(item) {
-    if (typeof item === 'object') {
-      pokemonList.push(item);
-    } else {
-      console.error('Invalid data type. Only objects can be added.');
+    function getAll() {
+      return pokemonList;
     }
-  }
 
-  function findByName(name) {
-    return pokemonList.filter(function (pokemon) {
-      return pokemon.name.toLowerCase() === name.toLowerCase();
-    });
-  }
+    function add(item) {
+      if (typeof item === 'object') {
+        pokemonList.push(item);
+      } else {
+        console.error('Invalid data type. Only objects can be added.');
+      }
+    }
 
-  function addListItem(pokemon) {
-    const listItem = document.createElement('li');
-    const button = document.createElement('button');
+    function findByName(name) {
+      return pokemonList.filter(function (pokemon) {
+        return pokemon.name.toLowerCase() === name.toLowerCase();
+      });
+    }
 
-    button.innerText = pokemon.name;
-    button.classList.add('pokemon-button');
+    function addListItem(pokemon) {
+      const listItem = document.createElement('li');
+      const button = document.createElement('button');
 
-    listItem.appendChild(button);
-    pokemonListElement.appendChild(listItem);
+      button.innerText = pokemon.name;
+      button.classList.add('pokemon-button');
 
-    button.addEventListener('click', function () {
-      showDetails(pokemon); // Call showDetails here
-    });
-  }
+      listItem.appendChild(button);
+      pokemonListElement.appendChild(listItem);
 
-  function loadList() {
-    return fetch(apiUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        data.results.forEach((item) => {
-          const pokemon = {
-            name: item.name,
-            detailsUrl: item.url,
-          };
-          add(pokemon);
+      button.addEventListener('click', function () {
+        showDetails(pokemon);
+      });
+    }
+
+    function loadList() {
+      return fetch(apiUrl)
+        .then((response) => response.json())
+        .then((data) => {
+          data.results.forEach((item) => {
+            const pokemon = {
+              name: item.name,
+              detailsUrl: item.url,
+            };
+            add(pokemon);
+          });
+        })
+        .catch((error) => {
+          console.error('Error loading Pokémon list', error);
         });
-      })
-      .catch((error) => {
-        console.error('Error loading Pokémon list', error);
-      });
-  }
+    }
 
-  function loadDetails(pokemon) {
-    const url = pokemon.detailsUrl;
-    return fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        pokemon.imgUrl = data.sprites.front_default;
-        pokemon.height = data.height / 10; // Convert height to meters
-      })
-      .catch((error) => {
-        console.error(`Error loading details for ${pokemon.name}`, error);
-      });
-  }
+    function loadDetails(pokemon) {
+      const url = pokemon.detailsUrl;
+      return fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          pokemon.imgUrl = data.sprites.front_default;
+          pokemon.height = data.height / 10; // Convert height to meters
+        })
+        .catch((error) => {
+          console.error(`Error loading details for ${pokemon.name}`, error);
+        });
+    }
 
-  function showDetails(pokemon) {
-    loadDetails(pokemon)
-      .then(() => {
-        console.log(`Name: ${pokemon.name}`);
-        console.log(`Height: ${pokemon.height}`);
-        console.log(`Image URL: ${pokemon.imgUrl}`);
-      })
-      .catch((error) => {
-        console.error('Error loading Pokémon details', error);
-      });
-  }
+    function showDetails(pokemon) {
+      loadDetails(pokemon)
+        .then(() => {
+          const modal = document.getElementById('modal');
+          const modalTitle = document.getElementById('modal-title');
+          const modalHeight = document.getElementById('modal-height');
+          const modalImage = document.getElementById('modal-image');
 
-  return {
-    getAll: getAll,
-    add: add,
-    findByName: findByName,
-    addListItem: addListItem,
-    loadList: loadList,
-    loadDetails: loadDetails,
-  };
-})();
+          // Set modal content
+          modalTitle.textContent = `Name: ${pokemon.name}`;
+          modalHeight.textContent = `Height: ${pokemon.height} meters`;
+          modalImage.src = pokemon.imgUrl;
 
-const specialHeightThreshold = 1;
+          // Show the modal
+          modal.style.display = 'block';
+        })
+        .catch((error) => {
+          console.error('Error loading Pokémon details', error);
+        });
+    }
 
-const pokemonListElement = document.querySelector('.pokemon-list');
+    return {
+      getAll: getAll,
+      add: add,
+      findByName: findByName,
+      addListItem: addListItem,
+      loadList: loadList,
+      loadDetails: loadDetails,
+    };
+  })();
 
-// Load the Pokémon list from the external source and then populate the list
-pokemonRepository.loadList().then(function () {
-  const pokemonList = pokemonRepository.getAll();
-  pokemonList.forEach(function (pokemon) {
-    pokemonRepository.addListItem(pokemon);
+  const specialHeightThreshold = 1;
+
+  const pokemonListElement = document.querySelector('.pokemon-list');
+
+  // Load the Pokémon list from the external source and then populate the list
+  pokemonRepository.loadList().then(function () {
+    const pokemonList = pokemonRepository.getAll();
+    pokemonList.forEach(function (pokemon) {
+      pokemonRepository.addListItem(pokemon);
+    });
+  });
+
+  const closeButton = document.getElementById('close-button');
+  const modal = document.getElementById('modal');
+
+  closeButton.addEventListener('click', function () {
+    modal.style.display = 'none';
+  });
+
+  // Close the modal if the user clicks outside of it
+  window.addEventListener('click', function (event) {
+    if (event.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+
+  // Close the modal with the 'Esc' key
+  window.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && modal.style.display === 'block') {
+      modal.style.display = 'none';
+    }
   });
 });
