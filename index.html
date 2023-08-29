@@ -3,69 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
+    <title>Pokémon</title>
     <link rel="stylesheet" href="css/styles.css" />
-    <title>Pokedex</title>
+    <script>
+      // Hide the modal when the page loads
+      document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById('modal');
+        modal.style.display = 'none';
+      });
+    </script>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">Pokemon</a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav"></div>
-    </nav>
+    <header>
+      <img src="./pngegg.png" alt="Pokémon Logo" class="pokemon-logo" />
+    </header>
 
-    <ul class="list-group pokemon-list"></ul>
-
-    <div
-      class="modal fade"
-      id="modal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content text-center">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modal-title"></h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <p id="modal-height"></p>
-            <img
-              id="modal-image"
-              src=""
-              alt="Pokémon Image"
-              class="img-fluid"
-            />
-          </div>
-        </div>
+    <div class="container">
+      <div class="row" id="pokemonList">
+        <!-- Pokémon cards will be dynamically added here -->
       </div>
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <div class="modal" id="modal">
+      <div class="modal-content">
+        <span class="close-button" id="closeButton">&times;</span>
+        <h2 id="modalTitle"></h2>
+        <img id="modalImage" alt="Pokémon Image" />
+        <p id="modalHeight"></p>
+      </div>
+    </div>
+    <button id="back-to-top" title="Go to top">Back to the Top!</button>
 
     <script src="js/scripts.js"></script>
   </body>
