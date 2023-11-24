@@ -32,14 +32,18 @@ document.addEventListener('DOMContentLoaded', function () {
         card.style.margin = '10px';
 
         card.innerHTML = `
-          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-            index + 1
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index + 1
           }.png" alt="${pokemon.name}" class="card-img-top">
           <div class="card-body">
-            <h5 class="card-title text-capitalize">${pokemon.name}</h5>
+            <h5 class="card-title text-capitalize text-center">${pokemon.name}</h5>
             <p class="card-text">${pokemonNumber}</p> <!-- Display Pokémon number -->
           </div>
         `;
+
+
+        // Add a button or toggle to switch between shiny and regular versions
+        const toggleShinyButton = document.getElementById('toggleShinyButton');
+        let isShiny = false; // Keep track of the current version (regular or shiny)
 
         // Display Pokémon details in the modal when a card is clicked
         card.addEventListener('click', async () => {
@@ -53,9 +57,8 @@ document.addEventListener('DOMContentLoaded', function () {
             pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
           modalTitle.textContent = capitalizedPokemonName; // Capitalize the name
           modalTitle.classList.add('text-center'); // Center the name
-          modalImage.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-            index + 1
-          }.png`;
+          modalImage.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index + 1
+            }.png`;
           modalImage.style.width = '300px'; // Increase the image size
 
           // Fetch the actual height data from the Pokémon API
@@ -66,6 +69,42 @@ document.addEventListener('DOMContentLoaded', function () {
           const pokemonHeight = heightData.height * 10; // Convert height from decimeters to centimeters
 
           modalHeight.textContent = `Height: ${pokemonHeight} cm`;
+
+          // Fetch additional Pokémon data
+          const pokemonDetailsResponse = await fetch(`https://pokeapi.co/api/v2/pokemon/${index + 1}`);
+          const pokemonDetails = await pokemonDetailsResponse.json();
+
+          // Get abilities and capitalize
+          const abilities = pokemonDetails.abilities.map((ability) => ability.ability.name);
+          const capitalizedAbilities = abilities.map((ability) => ability.charAt(0).toUpperCase() + ability.slice(1));
+
+          // Limit the number of displayed abilities to 4
+          const displayedAbilities = capitalizedAbilities.slice(0, 4);
+
+          // Create a grid for displaying abilities
+          const abilityGrid = document.createElement('div');
+          abilityGrid.classList.add('ability-grid');
+
+          // Create two rows
+          for (let i = 0; i < 2; i++) {
+            const row = document.createElement('div');
+            row.classList.add('ability-row');
+
+            // Display two abilities in each row
+            for (let j = 0; j < 2; j++) {
+              const abilityIndex = i * 2 + j;
+              const abilityElement = document.createElement('div');
+              abilityElement.textContent = displayedAbilities[abilityIndex] || ''; // Display an empty string for undefined abilities
+              abilityElement.classList.add('ability-item');
+              row.appendChild(abilityElement);
+            }
+
+            abilityGrid.appendChild(row);
+          }
+
+          // Update modal content with the ability grid
+          modalAbilities.innerHTML = '<strong>Abilities:</strong>';
+          modalAbilities.appendChild(abilityGrid);
 
           // Center modal content
           modalImage.style.display = 'block';
