@@ -1,0 +1,25 @@
+{
+  "name": "simple-js-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "minify-js": "node_modules/.bin/uglifyjs js/scripts.js -o dist/js/scripts.min.js",
+    "minify": "npm run minify-js"
+  },
+  
+  
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.8.0",
+    "cssnano": "^7.0.5",
+    "eslint": "^9.8.0",
+    "globals": "^15.8.0",
+    "postcss": "^8.4.41",
+    "postcss-cli": "^11.0.0",
+    "prettier": "^3.3.3",
+    "uglify-js": "^3.19.2"
+  }
+}
